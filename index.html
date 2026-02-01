@@ -3,294 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modified Rivermead Mobility Index (mRMI)</title>
+    <title>mRMI Calculator (Modified Rivermead Mobility Index)</title>
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --border-color: #d1d5db;
+            --primary: #4f46e5;
+            --primary-light: #eef2ff;
+            --text: #1f2937;
+            --border: #d1d5db;
+            --bg: #f9fafb;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.5;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
-            background: var(--card-bg);
-            padding: 24px;
+            background: white;
+            padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
-            font-size: 1.5rem;
+        header {
             text-align: center;
-            margin-bottom: 8px;
-            color: var(--primary-color);
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 10px;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #6b7280;
-            font-size: 0.9rem;
-            margin-bottom: 24px;
-        }
+        h1 { margin: 0; color: var(--primary); font-size: 1.6rem; }
+        .subtitle { color: #6b7280; font-size: 0.9rem; margin-top: 5px; }
 
         .mrmi-item {
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 25px;
         }
 
-        .question-text {
-            font-weight: 600;
+        .question-title {
+            font-weight: 700;
+            font-size: 1.05rem;
             margin-bottom: 12px;
             display: block;
         }
 
-        /* GRID SELECTION STYLING */
+        /* THE GRID SYSTEM */
         .score-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
+            gap: 6px;
         }
 
         .score-grid label {
             cursor: pointer;
+            position: relative;
         }
 
-        .score-grid input[type="radio"] {
-            display: none; /* Hide the default radio button */
+        .score-grid input {
+            display: none; /* Hide standard radio circle */
         }
 
-        .score-grid span {
+        /* Styling the button box */
+        .box {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 45px;
-            background: #fff;
-            border: 2px solid var(--border-color);
+            padding: 10px 4px;
+            border: 2px solid var(--border);
             border-radius: 8px;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
-
-        /* Hover & Checked states */
-        .score-grid label:hover span {
-            background: #f9fafb;
-            border-color: var(--primary-color);
-        }
-
-        .score-grid input[type="radio"]:checked + span {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        /* Labels for 0 and 5 */
-        .grid-legend {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: #9ca3af;
-            margin-top: 4px;
-            padding: 0 4px;
-        }
-
-        /* STICKY FOOTER FOR TOTAL */
-        .result-panel {
-            position: sticky;
-            bottom: 0;
-            background: var(--card-bg);
-            padding: 16px;
-            margin-top: 20px;
-            border-top: 3px solid var(--primary-color);
             text-align: center;
+            transition: all 0.2s;
+            min-height: 70px;
+            background: white;
         }
 
-        .total-box {
-            font-size: 1.2rem;
-            font-weight: bold;
+        .box .num {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 4px;
         }
 
-        #total-score {
-            font-size: 2rem;
-            color: var(--primary-color);
-        }
-
-        .btn-reset {
-            margin-top: 12px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
+        .box .desc {
+            font-size: 0.65rem;
+            line-height: 1.1;
+            color: #6b7280;
             font-weight: 500;
         }
 
-        .btn-reset:hover {
-            background: #dc2626;
+        /* Hover & Selected states */
+        .score-grid label:hover .box {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .score-grid input:checked + .box {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .score-grid input:checked + .box .desc {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* RESULTS BAR */
+        .sticky-footer {
+            position: sticky;
+            bottom: 10px;
+            background: #1e293b;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
+        }
+
+        .total-label { font-size: 1rem; opacity: 0.8; }
+        #total-score { font-size: 3rem; font-weight: 900; line-height: 1; margin: 5px 0; color: #818cf8; }
+
+        .btn-clear {
+            background: #475569;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .btn-clear:hover { background: #64748b; }
+
+        /* Responsive adjustments for narrow screens */
+        @media (max-width: 480px) {
+            .box .desc { font-size: 0.55rem; }
+            .box { padding: 8px 2px; min-height: 60px; }
+            h1 { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>mRMI Calculator</h1>
-    <p class="subtitle">Modified Rivermead Mobility Index (0-40)</p>
+    <header>
+        <h1>mRMI Calculator</h1>
+        <p class="subtitle">Modified Rivermead Mobility Index (0-40 Scale)</p>
+    </header>
 
     <form id="mrmiForm">
-        <!-- Question 1 -->
-        <div class="mrmi-item">
-            <span class="question-text">1. Turning over in bed</span>
-            <div class="score-grid">
-                <label><input type="radio" name="q1" value="0"><span>0</span></label>
-                <label><input type="radio" name="q1" value="1"><span>1</span></label>
-                <label><input type="radio" name="q1" value="2"><span>2</span></label>
-                <label><input type="radio" name="q1" value="3"><span>3</span></label>
-                <label><input type="radio" name="q1" value="4"><span>4</span></label>
-                <label><input type="radio" name="q1" value="5"><span>5</span></label>
-            </div>
-            <div class="grid-legend"><span>Unable</span><span>Independent</span></div>
-        </div>
+        <!-- Reusable Question Template -->
+        <div id="questions-container"></div>
 
-        <!-- Question 2 -->
-        <div class="mrmi-item">
-            <span class="question-text">2. Lying to sitting</span>
-            <div class="score-grid">
-                <label><input type="radio" name="q2" value="0"><span>0</span></label>
-                <label><input type="radio" name="q2" value="1"><span>1</span></label>
-                <label><input type="radio" name="q2" value="2"><span>2</span></label>
-                <label><input type="radio" name="q2" value="3"><span>3</span></label>
-                <label><input type="radio" name="q2" value="4"><span>4</span></label>
-                <label><input type="radio" name="q2" value="5"><span>5</span></label>
-            </div>
-            <div class="grid-legend"><span>Unable</span><span>Independent</span></div>
-        </div>
-
-        <!-- Question 3 -->
-        <div class="mrmi-item">
-            <span class="question-text">3. Sitting balance</span>
-            <div class="score-grid">
-                <label><input type="radio" name="q3" value="0"><span>0</span></label>
-                <label><input type="radio" name="q3" value="1"><span>1</span></label>
-                <label><input type="radio" name="q3" value="2"><span>2</span></label>
-                <label><input type="radio" name="q3" value="3"><span>3</span></label>
-                <label><input type="radio" name="q3" value="4"><span>4</span></label>
-                <label><input type="radio" name="q3" value="5"><span>5</span></label>
-            </div>
-            <div class="grid-legend"><span>Unable</span><span>Independent</span></div>
-        </div>
-
-        <!-- Question 4 -->
-        <div class="mrmi-item">
-            <span class="question-text">4. Sitting to standing</span>
-            <div class="score-grid">
-                <label><input type="radio" name="q4" value="0"><span>0</span></label>
-                <label><input type="radio" name="q4" value="1"><span>1</span></label>
-                <label><input type="radio" name="q4" value="2"><span>2</span></label>
-                <label><input type="radio" name="q4" value="3"><span>3</span></label>
-                <label><input type="radio" name="q4" value="4"><span>4</</span></label>
-                <label><input type="radio" name="q4" value="5"><span>5</span></label>
-            </div>
-            <div class="grid-legend"><span>Unable</span><span>Independent</span></div>
-        </div>
-
-        <!-- Question 5 -->
-        <div class="mrmi-item">
-            <span class="question-text">5. Standing</span>
-            <div class="score-grid">
-                <label><input type="radio" name="q5" value="0"><span>0</span></label>
-                <label><input type="radio" name="q5" value="1"><span>1</span></label>
-                <label><input type="radio" name="q5" value="2"><span>2</span></label>
-                <label><input type="radio" name="q5" value="3"><span>3</span></label>
-                <label><input type="radio" name="q5" value="4"><span>4</span></label>
-                <label><input type="radio" name="q5" value="5"><span>5</span></label>
-            </div>
-            <div class="grid-legend"><span>Unable</span><span>Independent</span></div>
-        </div>
-
-        <!-- Question 6 -->
-        <div class="mrmi-item">
-            <span class="question-text">6. Transfers</span>
-            <div class="score-grid">
-                <label><input type="radio" name="q6" value="0"><span>0</span></label>
-                <label><input type="radio" name="q6" value="1"><span>1</span></label>
-                <label><input type="radio" name="q6" value="2"><span>2</span></label>
-                <label><input type="radio" name="q6" value="3"><span>3</span></label>
-                <label><input type="radio" name="q6" value="4"><span>4</span></label>
-                <label><input type="radio" name="q6" value="5"><span>5</span></label>
-            </div>
-            <div class="grid-legend"><span>Unable</span><span>Independent</span></div>
-        </div>
-
-        <!-- Question 7 -->
-        <div class="mrmi-item">
-            <span class="question-text">7. Walking indoors</span>
-            <div class="score-grid">
-                <label><input type="radio" name="q7" value="0"><span>0</span></label>
-                <label><input type="radio" name="q7" value="1"><span>1</span></label>
-                <label><input type="radio" name="q7" value="2"><span>2</span></label>
-                <label><input type="radio" name="q7" value="3"><span>3</span></label>
-                <label><input type="radio" name="q7" value="4"><span>4</span></label>
-                <label><input type="radio" name="q7" value="5"><span>5</span></label>
-            </div>
-            <div class="grid-legend"><span>Unable</span><span>Independent</span></div>
-        </div>
-
-        <!-- Question 8 -->
-        <div class="mrmi-item">
-            <span class="question-text">8. Climbing stairs</span>
-            <div class="score-grid">
-                <label><input type="radio" name="q8" value="0"><span>0</span></label>
-                <label><input type="radio" name="q8" value="1"><span>1</span></label>
-                <label><input type="radio" name="q8" value="2"><span>2</span></label>
-               <label><input type="radio" name="q8" value="3"><span>3</span></label>
-                <label><input type="radio" name="q8" value="4"><span>4</span></label>
-                <label><input type="radio" name="q8" value="5"><span>5</span></label>
-            </div>
-            <div class="grid-legend"><span>Unable</span><span>Independent</span></div>
-        </div>
-
-        <div class="result-panel">
-            <div class="total-box">Total Score: <span id="total-score">0</span> / 40</div>
-            <button type="button" class="btn-reset" onclick="resetForm()">Clear All</button>
+        <div class="sticky-footer">
+            <span class="total-label">Total Score</span>
+            <span id="total-score">0</span>
+            <span style="font-size: 0.8rem; opacity: 0.6;">Maximum: 40</span>
+            <button type="button" class="btn-clear" onclick="resetAll()">Clear Form</button>
         </div>
     </form>
 </div>
 
 <script>
-    const form = document.getElementById('mrmiForm');
-    const totalDisplay = document.getElementById('total-score');
+    const questions = [
+        "1. Turning over in bed",
+        "2. Lying to sitting",
+        "3. Sitting balance",
+        "4. Sitting to standing",
+        "5. Standing",
+        "6. Transfers",
+        "7. Walking indoors",
+        "8. Climbing stairs"
+    ];
 
-    // Update total whenever a radio button changes
-    form.addEventListener('change', () => {
-        let total = 0;
-        const checkedButtons = form.querySelectorAll('input[type="radio"]:checked');
+    const scoreLabels = [
+        "Unable",
+        "2-person Assist",
+        "1-person Assist",
+        "Supervision / Verbal",
+        "Aid / Appliance",
+        "Independent"
+    ];
+
+    const container = document.getElementById('questions-container');
+
+    // Generate questions dynamically
+    questions.forEach((q, qIndex) => {
+        let html = `
+            <div class="mrmi-item">
+                <span class="question-title">${q}</span>
+                <div class="score-grid">
+        `;
         
-        checkedButtons.forEach(button => {
-            total += parseInt(button.value);
+        scoreLabels.forEach((label, sIndex) => {
+            html += `
+                <label>
+                    <input type="radio" name="q${qIndex}" value="${sIndex}">
+                    <div class="box">
+                        <span class="num">${sIndex}</span>
+                        <span class="desc">${label}</span>
+                    </div>
+                </label>
+            `;
         });
 
-        totalDisplay.innerText = total;
+        html += </div></div>;
+        container.innerHTML += html;
     });
 
-    // Reset function
-    function resetForm() {
+    // Scoring Logic
+    const form = document.getElementById('mrmiForm');
+    const display = document.getElementById('total-score');
+
+    form.addEventListener('change', () => {
+        let total = 0;
+        const checked = form.querySelectorAll('input:checked');
+        checked.forEach(input => total += parseInt(input.value));
+        display.innerText = total;
+        
+        // Visual feedback for complete items
+        checked.forEach(input => {
+            input.closest('.mrmi-item').style.opacity = "1";
+        });
+    });
+
+    function resetAll() {
         form.reset();
-        totalDisplay.innerText = '0';
+        display.innerText = "0";
         window.scrollTo({top: 0, behavior: 'smooth'});
     }
 </script>
